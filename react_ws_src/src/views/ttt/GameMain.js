@@ -180,6 +180,62 @@ export default class GameMain extends Component {
   }
 
   getBestComputerMove(cellValues, emptyCells) {
+    const difficulty = this.props.difficulty || "hard";
+
+    switch (difficulty) {
+      case "easy":
+        return this.getEasyComputerMove(emptyCells);
+
+      case "medium":
+        return this.getMediumComputerMove(cellValues, emptyCells);
+
+      case "hard":
+      default:
+        return this.getHardComputerMove(cellValues, emptyCells);
+    }
+  }
+
+  getEasyComputerMove(emptyCells) {
+    // Easy: Just make random moves
+    return rand_arr_elem(emptyCells);
+  }
+
+  getMediumComputerMove(cellValues, emptyCells) {
+    // Medium: Sometimes make strategic moves, sometimes random
+    const shouldPlaySmart = Math.random() > 0.4; // 60% chance to play smart
+
+    if (!shouldPlaySmart) {
+      return rand_arr_elem(emptyCells);
+    }
+
+    // 1. Try to win
+    for (let cell of emptyCells) {
+      const testValues = { ...cellValues, [cell]: "o" };
+      if (this.checkForWinner(testValues, "o")) {
+        return cell;
+      }
+    }
+
+    // 2. Sometimes block player from winning (70% chance)
+    if (Math.random() > 0.3) {
+      for (let cell of emptyCells) {
+        const testValues = { ...cellValues, [cell]: "x" };
+        if (this.checkForWinner(testValues, "x")) {
+          return cell;
+        }
+      }
+    }
+
+    // 3. Take center if available (50% chance)
+    if (emptyCells.includes("c5") && Math.random() > 0.5) {
+      return "c5";
+    }
+
+    // 4. Random move for remaining cases
+    return rand_arr_elem(emptyCells);
+  }
+
+  getHardComputerMove(cellValues, emptyCells) {
     // 1. Try to win
     for (let cell of emptyCells) {
       const testValues = { ...cellValues, [cell]: "o" };
@@ -373,12 +429,37 @@ export default class GameMain extends Component {
     this.props.onEndGame();
   }
 
+  restartGame() {
+    this.setState({
+      cellValues: {},
+      isPlayerTurn: true,
+      isGameActive: this.props.game_type !== "live",
+      gameStatus: this.props.game_type === "live" ? "Connecting" : "Start game",
+    });
+
+    const cells = document.querySelectorAll("td.win");
+    cells.forEach((cell) => {
+      cell.classList.remove("win");
+    });
+
+    if (this.props.game_type === "live") {
+      this.disconnectSocket();
+      this.initializeSocket();
+    }
+
+    this.animateGameStart();
+  }
+
   render() {
     const { cellValues, gameStatus, isGameActive, isPlayerTurn } = this.state;
+    const gameTypeDisplay =
+      this.props.game_type === "live"
+        ? "Live"
+        : `Computer (${this.props.difficulty || "Hard"})`;
 
     return (
-      <div id="GameMain">
-        <h1>Play {this.props.game_type}</h1>
+      <div id="GameMain" style={{ paddingBottom: "60px", minHeight: "100vh" }}>
+        <h1>Play {gameTypeDisplay}</h1>
 
         <div id="game_stat">
           <div id="game_stat_msg">{gameStatus}</div>
@@ -470,15 +551,27 @@ export default class GameMain extends Component {
           </table>
         </div>
 
-        <button
-          type="submit"
-          onClick={this.endGame.bind(this)}
-          className="button"
-        >
-          <span>
-            End Game <span className="fa fa-caret-right"></span>
-          </span>
-        </button>
+        <div className="game-controls">
+          <button
+            type="button"
+            onClick={this.restartGame.bind(this)}
+            className="button restart-button"
+          >
+            <span>
+              Restart Game <span className="fa fa-refresh"></span>
+            </span>
+          </button>
+
+          <button
+            type="submit"
+            onClick={this.endGame.bind(this)}
+            className="button end-button"
+          >
+            <span>
+              End Game <span className="fa fa-caret-right"></span>
+            </span>
+          </button>
+        </div>
       </div>
     );
   }

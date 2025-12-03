@@ -15,8 +15,6 @@ export default class Ttt extends Component {
     };
   }
 
-  //	------------------------	------------------------	------------------------
-
   render() {
     const { game_step } = this.state;
 
@@ -41,6 +39,7 @@ export default class Ttt extends Component {
           {game_step == "start_game" && (
             <GameMain
               game_type={this.state.game_type}
+              difficulty={this.state.difficulty}
               onEndGame={this.gameEnd.bind(this)}
             />
           )}
@@ -49,8 +48,6 @@ export default class Ttt extends Component {
     );
   }
 
-  //	------------------------	------------------------	------------------------
-
   saveUserName(n) {
     app.settings.curr_user = {};
     app.settings.curr_user.name = n;
@@ -58,32 +55,25 @@ export default class Ttt extends Component {
     this.upd_game_step();
   }
 
-  //	------------------------	------------------------	------------------------
-
-  saveGameType(t) {
+  saveGameType(t, difficulty = null) {
     this.state.game_type = t;
+    this.state.difficulty = difficulty;
 
     this.upd_game_step();
   }
-
-  //	------------------------	------------------------	------------------------
 
   gameEnd(t) {
     this.state.game_type = null;
+    this.state.difficulty = null;
 
     this.upd_game_step();
   }
-
-  //	------------------------	------------------------	------------------------
-  //	------------------------	------------------------	------------------------
 
   upd_game_step() {
     this.setState({
       game_step: this.set_game_step(),
     });
   }
-
-  //	------------------------	------------------------	------------------------
 
   set_game_step() {
     if (!app.settings.curr_user || !app.settings.curr_user.name)
@@ -92,8 +82,6 @@ export default class Ttt extends Component {
     else return "start_game";
   }
 }
-
-//	------------------------	------------------------	------------------------
 
 Ttt.propTypes = {
   params: React.PropTypes.any,

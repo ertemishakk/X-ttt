@@ -1,49 +1,75 @@
-import React, {Component} from 'react'
+import React, { Component } from "react";
+import DifficultySelection from "./DifficultySelection";
 
-export default class SetGameType extends Component {
+class SetGameType extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showDifficultySelection: false,
+    };
+  }
 
-	constructor (props) {
-		super(props)
+  selTypeLive = (e) => {
+    this.props.onSetType("live");
+  };
 
-		this.state = {}
-	}
+  showDifficultyOptions = (e) => {
+    this.setState({ showDifficultySelection: true });
+  };
 
-//	------------------------	------------------------	------------------------
+  goBack = (e) => {
+    this.setState({ showDifficultySelection: false });
+  };
 
-	render () {
-		return (
-			<div id='SetGameType'>
+  selTypeComp = (difficulty) => {
+    this.props.onSetType("comp", difficulty);
+  };
 
-				<h1>Choose game type</h1>
+  render() {
+    const { showDifficultySelection } = this.state;
 
-				<button type='submit' onClick={this.selTypeLive.bind(this)} className='button long'><span>Live against another player <span className='fa fa-caret-right'></span></span></button>
-				
-				&nbsp;&nbsp;&nbsp;&nbsp;
+    return (
+      <div id="SetGameType">
+        <h1>
+          {showDifficultySelection
+            ? "Choose difficulty level"
+            : "Choose game type"}
+        </h1>
 
-				<button type='submit' onClick={this.selTypeComp.bind(this)} className='button long'><span>Against a computer <span className='fa fa-caret-right'></span></span></button>
+        {!showDifficultySelection && (
+          <div>
+            <button
+              type="button"
+              onClick={this.selTypeLive}
+              className="button long"
+            >
+              <span>
+                Live against another player{" "}
+                <span className="fa fa-caret-right"></span>
+              </span>
+            </button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button
+              type="button"
+              onClick={this.showDifficultyOptions}
+              className="button long"
+            >
+              <span>
+                Against a computer <span className="fa fa-caret-right"></span>
+              </span>
+            </button>
+          </div>
+        )}
 
-			</div>
-		)
-	}
-
-//	------------------------	------------------------	------------------------
-
-	selTypeLive (e) {
-		// const { name } = this.refs
-		// const { onSetType } = this.props
-		// onSetType(name.value.trim())
-
-		this.props.onSetType('live')
-	}
-
-//	------------------------	------------------------	------------------------
-
-	selTypeComp (e) {
-		// const { name } = this.refs
-		// const { onSetType } = this.props
-		// onSetType(name.value.trim())
-
-		this.props.onSetType('comp')
-	}
-
+        {showDifficultySelection && (
+          <DifficultySelection
+            onSelectDifficulty={this.selTypeComp}
+            onGoBack={this.goBack}
+          />
+        )}
+      </div>
+    );
+  }
 }
+
+export default SetGameType;
