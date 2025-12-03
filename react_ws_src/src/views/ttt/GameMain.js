@@ -6,6 +6,7 @@ import TweenMax from "gsap";
 
 import rand_arr_elem from "../../helpers/rand_arr_elem";
 import rand_to_fro from "../../helpers/rand_to_fro";
+import Hints from "./Hints";
 
 export default class GameMain extends Component {
   constructor(props) {
@@ -32,6 +33,7 @@ export default class GameMain extends Component {
       isPlayerTurn: true,
       isGameActive: !isLiveGame,
       gameStatus: isLiveGame ? "Connecting" : "Start game",
+      gameKey: 0, // Used to trigger hint component reset
     };
 
     if (isLiveGame) {
@@ -483,6 +485,7 @@ export default class GameMain extends Component {
       isPlayerTurn: true,
       isGameActive: this.props.game_type !== "live",
       gameStatus: this.props.game_type === "live" ? "Connecting" : "Start game",
+      gameKey: this.state.gameKey + 1,
     });
 
     const cells = document.querySelectorAll("td.win");
@@ -499,7 +502,8 @@ export default class GameMain extends Component {
   }
 
   render() {
-    const { cellValues, gameStatus, isGameActive, isPlayerTurn } = this.state;
+    const { cellValues, gameStatus, isGameActive, isPlayerTurn, gameKey } =
+      this.state;
     const gameTypeDisplay =
       this.props.game_type === "live"
         ? "Live"
@@ -517,6 +521,15 @@ export default class GameMain extends Component {
             </div>
           )}
         </div>
+
+        <Hints
+          cellValues={cellValues}
+          isPlayerTurn={isPlayerTurn}
+          isGameActive={isGameActive}
+          gameType={this.props.game_type}
+          gameKey={gameKey}
+          winningCombinations={this.winningCombinations}
+        />
 
         {this.renderGameBoard()}
 
