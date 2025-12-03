@@ -80,6 +80,9 @@
       "<rootDir>/node_modules/react",
       "<rootDir>/node_modules/react-dom",
       "<rootDir>/node_modules/react-addons-test-utils"
-    ]
+    ],
+    "moduleNameMapper": {
+      "\\.(xml)$": "<rootDir>/__mocks__/fileMock.js"
+    }
   }
 }
