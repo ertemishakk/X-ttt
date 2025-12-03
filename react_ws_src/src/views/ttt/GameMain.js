@@ -116,6 +116,54 @@ export default class GameMain extends Component {
     );
   }
 
+  renderCell(cellId, additionalClasses = "") {
+    return (
+      <td
+        key={cellId}
+        id={`game_board-${cellId}`}
+        ref={cellId}
+        onClick={this.handleCellClick.bind(this)}
+        className={additionalClasses}
+      >
+        {this.renderCellContent(cellId)}
+      </td>
+    );
+  }
+
+  renderGameBoard() {
+    const boardRows = [
+      [
+        { id: "c1", classes: "" },
+        { id: "c2", classes: "vbrd" },
+        { id: "c3", classes: "" },
+      ],
+      [
+        { id: "c4", classes: "hbrd" },
+        { id: "c5", classes: "vbrd hbrd" },
+        { id: "c6", classes: "hbrd" },
+      ],
+      [
+        { id: "c7", classes: "" },
+        { id: "c8", classes: "vbrd" },
+        { id: "c9", classes: "" },
+      ],
+    ];
+
+    return (
+      <div id="game_board">
+        <table>
+          <tbody>
+            {boardRows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell) => this.renderCell(cell.id, cell.classes))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   handleCellClick(event) {
     const { isPlayerTurn, isGameActive, cellValues } = this.state;
 
@@ -470,86 +518,7 @@ export default class GameMain extends Component {
           )}
         </div>
 
-        <div id="game_board">
-          <table>
-            <tbody>
-              <tr>
-                <td
-                  id="game_board-c1"
-                  ref="c1"
-                  onClick={this.handleCellClick.bind(this)}
-                >
-                  {this.renderCellContent("c1")}
-                </td>
-                <td
-                  id="game_board-c2"
-                  ref="c2"
-                  onClick={this.handleCellClick.bind(this)}
-                  className="vbrd"
-                >
-                  {this.renderCellContent("c2")}
-                </td>
-                <td
-                  id="game_board-c3"
-                  ref="c3"
-                  onClick={this.handleCellClick.bind(this)}
-                >
-                  {this.renderCellContent("c3")}
-                </td>
-              </tr>
-              <tr>
-                <td
-                  id="game_board-c4"
-                  ref="c4"
-                  onClick={this.handleCellClick.bind(this)}
-                  className="hbrd"
-                >
-                  {this.renderCellContent("c4")}
-                </td>
-                <td
-                  id="game_board-c5"
-                  ref="c5"
-                  onClick={this.handleCellClick.bind(this)}
-                  className="vbrd hbrd"
-                >
-                  {this.renderCellContent("c5")}
-                </td>
-                <td
-                  id="game_board-c6"
-                  ref="c6"
-                  onClick={this.handleCellClick.bind(this)}
-                  className="hbrd"
-                >
-                  {this.renderCellContent("c6")}
-                </td>
-              </tr>
-              <tr>
-                <td
-                  id="game_board-c7"
-                  ref="c7"
-                  onClick={this.handleCellClick.bind(this)}
-                >
-                  {this.renderCellContent("c7")}
-                </td>
-                <td
-                  id="game_board-c8"
-                  ref="c8"
-                  onClick={this.handleCellClick.bind(this)}
-                  className="vbrd"
-                >
-                  {this.renderCellContent("c8")}
-                </td>
-                <td
-                  id="game_board-c9"
-                  ref="c9"
-                  onClick={this.handleCellClick.bind(this)}
-                >
-                  {this.renderCellContent("c9")}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        {this.renderGameBoard()}
 
         <div className="game-controls">
           <button
